@@ -1,0 +1,22 @@
+﻿@model MvcIdentiyFirstPrinciples.Models.User
+@{
+    ViewData["Title"] = "Login";
+}
+
+<form method="post">
+    <div class="mb-3">
+        <label asp-for="Username"></label>
+        <input asp-for="Username" class="form-control" />
+        <span asp-validation-for="Username" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <input type="submit" value="Login" class="btn btn-primary">
+</form>
+
+@if (ViewBag.Error != null) {
+    <div class="alert alert-danger mt-2">@ViewBag.Error</div>
+}

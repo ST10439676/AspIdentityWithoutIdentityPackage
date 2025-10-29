@@ -1,0 +1,109 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using MvcIdentiyFirstPrinciples.Models;
+using MvcIdentiyFirstPrinciples.Services;
+using User = MvcIdentiyFirstPrinciples.Models.User;
+
+namespace MvcIdentiyFirstPrinciples.Controllers
+{
+    public class AccountController : Controller
+    {
+
+        private UserDb _userDb;
+        private ILogger<AccountController> _logger;
+
+        public AccountController(UserDb userDb, ILogger<AccountController> logger)
+        {
+            _userDb = userDb;
+            _logger = logger;
+        }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Register(User user)
+        {
+            if (ModelState.IsValid)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            return View(user);
+        }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Login([Bind(nameof(Models.User.Username), nameof(Models.User.Password))]User user)
+        {
+            foreach (var key in ModelState.Keys)
+            {
+                if (key != nameof(Models.User.Username) || key != nameof(Models.User.Password))
+                {
+                    ModelState.Remove(key);
+                }
+            }
+            if (ModelState.IsValid)
+            {
+                _logger.LogInformation("Searching for user {0}", user.Username);
+                User? dbUser = _userDb.GetUserByName(user.Username);
+                if (dbUser is not null && user.Password == dbUser.Password)
+                {
+                    _logger.LogInformation("Found user: {0}", dbUser.Username);
+                    return SignIn(new ClaimsPrincipal(Models.User.CreateClaimIdentity(dbUser)), CookieAuthenticationDefaults.AuthenticationScheme);
+                }
+                ModelState.AddModelError<User>(u => u.Username, "Invalid Username or Password");
+                ModelState.AddModelError<User>(u => u.Password, "Invalid Username or Password");
+                return View(user);
+
+            }
+            return View(user);
+        }
+
+        [HttpGet, Authorize]
+        public IActionResult Logout()
+        {
+            return View();
+        }
+
+        [HttpPost, Authorize]
+        public IActionResult Logout([FromForm(Name = "yes")] string? yes, [FromForm(Name = "no")] string? no, [FromQuery(Name = "ReturnUrl")] string? ReturnUrl)
+        {
+            _logger.LogInformation("Logging out");
+            _logger.LogInformation("yes: {0}, no: {1}", yes ?? "'null'", no ?? "'null");
+            if (ModelState.IsValid)
+            {
+                _logger.LogInformation("Checking for yes or no in loggout");
+                if (yes is not null && no is null)
+                {
+                    _logger.LogInformation("Siging out");
+                    return SignOut(new AuthenticationProperties() { RedirectUri = Url.Action("Dashboard", "Home") });
+                }
+                if (no is not null && Url.IsLocalUrl(ReturnUrl))
+                {
+                    _logger.LogInformation("Not Signing out return to {0}", ReturnUrl);
+                    return LocalRedirect(ReturnUrl);
+                }
+            }
+            _logger.LogInformation("Could not logout and did not know where to return to");
+            return RedirectToAction("Dashboard", "Home");
+        }
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+    }
+}
