@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MvcIdentiyFirstPrinciples.Controllers
 {
-    [Authorize(Roles = Roles.ADMIN_ROLE)]
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         // GET: AdminController
