@@ -45,11 +45,9 @@ public class UserDb
 
     public void AddUser(User user)
     {
+        user.UserId = _users.Count;
         ValidateUser(user);
 
         _users.Add(user);
     }
-
-    
-
 }
