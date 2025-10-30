@@ -1,10 +1,12 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace MvcIdentiyFirstPrinciples;
 
-public class Roles
+public enum Roles
 {
-    public const string ADMIN_ROLE = "Admin";
-    public const string USER_ROLE = "User";
-
+    [Display(Name = "Admin")]
+    ADMIN_ROLE,
+    [Display(Name = "User")]
+    USER_ROLE
 }
