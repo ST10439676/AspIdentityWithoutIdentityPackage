@@ -12,8 +12,10 @@ public class User
     public string Username { get; set; }
     [Required, EmailAddress]
     public string Email { get; set; }
-    [Required, DataType(DataType.Password)]
-    public string Password { get; set; }
+    [Required]
+    public string PasswordHash { get; set; }
+    [Required]
+    public string Salt { get; set; }
     [Required]
     public string Role { get; set; } = "User";
 
