@@ -28,20 +28,18 @@ public class Program
         .AddOptions<UserDbOptions>().Configure(options => {
             int userId = 1;
             options.Users = [
-                new () {
+                UserTestFactory.CreateUser(new(){
                     UserId = userId++,
                     Email = "henry@example.com",
-                    Password = "qwerty100",
                     Username = "henry",
-                    Role = Roles.ADMIN_ROLE
-                },
-                new () {
+                    Role = RoleDisplayName.GetDisplayName(Roles.ADMIN_ROLE)
+                }, "qwerty100"),
+                UserTestFactory.CreateUser(new () {
                     UserId = userId++,
                     Email = "george@example.com",
-                    Password = "qwerty100",
                     Username = "george",
-                    Role = Roles.USER_ROLE
-                }
+                    Role = RoleDisplayName.GetDisplayName(Roles.USER_ROLE)
+                }, "qwerty100")
             ];
         });
 
