@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using MvcIdentiyFirstPrinciples.Models;
 using MvcIdentiyFirstPrinciples.Services;
+using MvcIdentiyFirstPrinciples.ViewModels;
 using User = MvcIdentiyFirstPrinciples.Models.User;
 
 namespace MvcIdentiyFirstPrinciples.Controllers
@@ -45,30 +46,26 @@ namespace MvcIdentiyFirstPrinciples.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login([Bind(nameof(Models.User.Username), nameof(Models.User.Password))]User user)
+        public IActionResult Login(LoginViewModel login)
         {
-            foreach (var key in ModelState.Keys)
-            {
-                if (key != nameof(Models.User.Username) || key != nameof(Models.User.Password))
-                {
-                    ModelState.Remove(key);
-                }
-            }
             if (ModelState.IsValid)
             {
-                _logger.LogInformation("Searching for user {0}", user.Username);
-                User? dbUser = _userDb.GetUserByName(user.Username);
-                if (dbUser is not null && user.Password == dbUser.Password)
+                _logger.LogInformation("Searching for user {0}", login.Username);
+                User? dbUser = _userDb.GetUserByName(login.Username);
+                if (dbUser is not null)
                 {
                     _logger.LogInformation("Found user: {0}", dbUser.Username);
+                }
+                if (dbUser is not null && PasswordHelper.VerifyPassword(login.Password, dbUser.PasswordHash, dbUser.Salt))
+                {
                     return SignIn(new ClaimsPrincipal(Models.User.CreateClaimIdentity(dbUser)), CookieAuthenticationDefaults.AuthenticationScheme);
                 }
-                ModelState.AddModelError<User>(u => u.Username, "Invalid Username or Password");
-                ModelState.AddModelError<User>(u => u.Password, "Invalid Username or Password");
-                return View(user);
+                ModelState.AddModelError(nameof(login.Username), "Invalid Username or Password");
+                ModelState.AddModelError(nameof(login.Password), "Invalid Username or Password");
+                return View(login);
 
             }
-            return View(user);
+            return View(login);
         }
 
         [HttpGet, Authorize]
