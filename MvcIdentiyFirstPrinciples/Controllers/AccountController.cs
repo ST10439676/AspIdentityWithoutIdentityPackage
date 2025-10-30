@@ -30,13 +30,22 @@ namespace MvcIdentiyFirstPrinciples.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(User user)
+        public IActionResult Register(RegisterViewModel register)
         {
             if (ModelState.IsValid)
             {
-                return RedirectToAction("Index", "Home");
+                (string passwordHash, string salt) = PasswordHelper.GenerateHash(register.Password);
+                var user = new User()
+                {
+                    Username = register.Username,
+                    Email = register.Email,
+                    PasswordHash = passwordHash,
+                    Salt = salt,
+                    Role = RoleDisplayName.GetDisplayName(register.Role)
+                };
+                _userDb.AddUser(user);
             }
-            return View(user);
+            return View(register);
         }
 
         [HttpGet]
