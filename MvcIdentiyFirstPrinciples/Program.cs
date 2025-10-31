@@ -33,16 +33,16 @@ builder.Services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasherService>()
             });
         builder.Services.AddSingleton<UserTestFactory>();
         builder.Services.AddSingleton<UserDb>()
-        .AddOptions<UserDbOptions>().Configure(options => {
+        .AddOptions<UserDbOptions>().Configure<UserTestFactory>((options, userFactory) => {
             int userId = 1;
             options.Users = [
-                UserTestFactory.CreateUser(new(){
+                userFactory.CreateUser(new(){
                     UserId = userId++,
                     Email = "henry@example.com",
                     Username = "henry",
                     Role = RoleDisplayName.GetDisplayName(Roles.ADMIN_ROLE)
                 }, "qwerty100"),
-                UserTestFactory.CreateUser(new () {
+                userFactory.CreateUser(new () {
                     UserId = userId++,
                     Email = "george@example.com",
                     Username = "george",
