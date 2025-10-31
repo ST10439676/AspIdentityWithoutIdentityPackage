@@ -61,11 +61,11 @@ namespace MvcIdentiyFirstPrinciples.Controllers
         {
             if (ModelState.IsValid)
             {
-                _logger.LogInformation("Searching for user {0}", login.Username);
+                _logger.LogInformation("Searching for user {username}", login.Username);
                 User? dbUser = _userDb.GetUserByName(login.Username);
                 if (dbUser is not null)
                 {
-                    _logger.LogInformation("Found user: {0}", dbUser.Username);
+                    _logger.LogInformation("Found user: {username}", dbUser.Username);
                 }
                 if (dbUser is not null && _passwordHasher.VerifyPassword(login.Password, dbUser.PasswordHash, dbUser.Salt))
                 {
@@ -89,7 +89,7 @@ namespace MvcIdentiyFirstPrinciples.Controllers
         public IActionResult Logout([FromForm(Name = "yes")] string? yes, [FromForm(Name = "no")] string? no, [FromQuery(Name = "ReturnUrl")] string? ReturnUrl)
         {
             _logger.LogInformation("Logging out");
-            _logger.LogInformation("yes: {0}, no: {1}", yes ?? "'null'", no ?? "'null");
+            _logger.LogInformation("yes: {yes_or_null}, no: {no_or_null}", yes ?? "'null'", no ?? "'null");
             if (ModelState.IsValid)
             {
                 _logger.LogInformation("Checking for yes or no in loggout");
@@ -100,7 +100,7 @@ namespace MvcIdentiyFirstPrinciples.Controllers
                 }
                 if (no is not null && Url.IsLocalUrl(ReturnUrl))
                 {
-                    _logger.LogInformation("Not Signing out return to {0}", ReturnUrl);
+                    _logger.LogInformation("Not Signing out return to {returnurl}", ReturnUrl);
                     return LocalRedirect(ReturnUrl);
                 }
             }
