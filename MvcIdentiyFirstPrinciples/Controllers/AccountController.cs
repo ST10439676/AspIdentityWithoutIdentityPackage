@@ -16,11 +16,13 @@ namespace MvcIdentiyFirstPrinciples.Controllers
 
         private UserDb _userDb;
         private ILogger<AccountController> _logger;
+        private IPasswordHasher _passwordHasher;
 
-        public AccountController(UserDb userDb, ILogger<AccountController> logger)
+        public AccountController(UserDb userDb, ILogger<AccountController> logger, IPasswordHasher passwordHasher)
         {
             _userDb = userDb;
             _logger = logger;
+            _passwordHasher = passwordHasher;
         }
 
         [HttpGet]
@@ -34,7 +36,7 @@ namespace MvcIdentiyFirstPrinciples.Controllers
         {
             if (ModelState.IsValid)
             {
-                (string passwordHash, string salt) = PasswordHelper.GenerateHash(register.Password);
+                (string passwordHash, string salt) = _passwordHasher.GenerateHash(register.Password);
                 var user = new User()
                 {
                     Username = register.Username,
@@ -65,7 +67,7 @@ namespace MvcIdentiyFirstPrinciples.Controllers
                 {
                     _logger.LogInformation("Found user: {0}", dbUser.Username);
                 }
-                if (dbUser is not null && PasswordHelper.VerifyPassword(login.Password, dbUser.PasswordHash, dbUser.Salt))
+                if (dbUser is not null && _passwordHasher.VerifyPassword(login.Password, dbUser.PasswordHash, dbUser.Salt))
                 {
                     return SignIn(new ClaimsPrincipal(Models.User.CreateClaimIdentity(dbUser)), CookieAuthenticationDefaults.AuthenticationScheme);
                 }
