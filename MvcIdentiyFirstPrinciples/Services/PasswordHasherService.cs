@@ -1,7 +1,5 @@
-using System;
 using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
-using System.ComponentModel.DataAnnotations;
 
 namespace MvcIdentiyFirstPrinciples.Services;
 

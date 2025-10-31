@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using MvcIdentiyFirstPrinciples.Models;
 using MvcIdentiyFirstPrinciples.Services;
 using MvcIdentiyFirstPrinciples.ViewModels;
 using User = MvcIdentiyFirstPrinciples.Models.User;

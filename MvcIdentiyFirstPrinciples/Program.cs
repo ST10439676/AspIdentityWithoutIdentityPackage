@@ -1,8 +1,6 @@
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.Options;
-using MvcIdentiyFirstPrinciples.Models;
 using MvcIdentiyFirstPrinciples.Services;
-using Roles = MvcIdentiyFirstPrinciples.Roles;
 
 namespace MvcIdentiyFirstPrinciples;
 
