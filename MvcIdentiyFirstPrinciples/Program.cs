@@ -24,6 +24,14 @@ public class Program
                 options.LogoutPath = "/Account/Logout";
             });
         builder.Services.AddSession();
+builder.Services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasherService>()
+            .Configure<Pbkdf2PasswordHasherOptions>(o =>
+            {
+                o.HashAlgorithmName = HashAlgorithmName.SHA256;
+                o.Iterations = 100_100;
+                o.OutputLength = 32;
+            });
+        builder.Services.AddSingleton<UserTestFactory>();
         builder.Services.AddSingleton<UserDb>()
         .AddOptions<UserDbOptions>().Configure(options => {
             int userId = 1;
